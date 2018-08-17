@@ -1,37 +1,40 @@
 pragma solidity 0.4.24;
 
-import "./AccessRestricted";
-
 contract Passport {
     struct Person {
         string name;
         string surname;
         string countryCode;
         uint age;
-        uint userId;
+        address addr;
+        bool dataIsSet;
     }
     
-    Person[] public userData;
-    mapping (address => bool) registeredUsers;
+    mapping (address => Person) registeredUsers;
     
     function registerNewUser(
         string _name,
         string _surname,
         string _countryCode,
-        uint _age, 
-        uint _userId
+        uint _age,
+        address _addr
         ) public {
             
-        require(!registeredUsers[_userId]);
+        require(!registeredUsers[_addr].dataIsSet, "This user is already registered.");
         
-        Person storage _person = new Person(
-            _name,
-            _surname,
-            _countryCode,
-            _age,
-            _userId);
-        
-        userData.push(_person);
-        registeredUsers[_userId] = true;
+        Person memory _person = Person({
+            name: _name,
+            surname: _surname,
+            countryCode: _countryCode,
+            age: _age,
+            addr: _addr,
+            dataIsSet: true
+        });
+
+        registeredUsers[_addr] = _person;
+    }
+
+    function isRegisteredUser(address _addr) public view returns (bool) {
+        return registeredUsers[_addr].dataIsSet;
     }
 }
