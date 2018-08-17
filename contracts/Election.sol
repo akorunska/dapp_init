@@ -15,11 +15,14 @@ contract Election is AccessRestricted {
     // maps candidate index to quantity of votes received
     mapping (uint => uint) public votesCounter;
 
+    
     enum Status { SelectingCandidates, InProcess, Finished }
     
     Status public electionStatus;
     
     Passport public userDataSource;
+    
+    address public winner;
     
     constructor(address _passportAddress) public {
         if (_passportAddress != address(0)) {
@@ -60,6 +63,18 @@ contract Election is AccessRestricted {
     }
     
     function finishElection() public onlyOwner inProcessStage {
+        uint maxVotes;
+        address currentWinner;
+        
+        // what should happen if two candidates have the same amount of votes?
+        for (uint i = 1; i < candidates.length; i++) {
+            if (votesCounter[i] > maxVotes) {
+                maxVotes = votesCounter[i];
+                currentWinner = candidates[i];
+            }
+        }
+        
+        winner = currentWinner;
         electionStatus = Status.Finished;
     }
     
