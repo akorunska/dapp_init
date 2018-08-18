@@ -82,7 +82,6 @@ contract Election is AccessRestricted {
         public 
         accessRestricted
         selectingCandidatesStage
-        returns (bool)
     {
         require(
             userDataSource.isRegisteredUser(candidate),
@@ -98,10 +97,14 @@ contract Election is AccessRestricted {
         candidates.push(candidate);
     }
     
+    function getCandidatesAmount() public view returns (uint) {
+        return (candidates.length);
+    }
+    
     function vote (uint candidateIndex) public inProcessStage {
         require (
-            candidateIndex > 0 && candidateIndex  > candidates.length,
-            ""
+            candidateIndex > 0 && candidateIndex < candidates.length,
+            "This index is not registered in Election"
         );
         
         require (

@@ -9,12 +9,15 @@ contract AccessRestricted {
     }
     
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner, "Message sender is not contract owner");
         _;
     }
     
     modifier accessRestricted() {
-        require(msg.sender == owner || admins[msg.sender]);
+        require(
+            msg.sender == owner || admins[msg.sender], 
+            "Message sender is not contract owner or admin"
+        );
         _;
     }
     
